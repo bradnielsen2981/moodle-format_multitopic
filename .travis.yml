@@ -13,7 +13,7 @@ services:
 addons:
   firefox: "47.0.1"
   chrome: stable
-  postgresql: "9.4"
+  postgresql: "9.5"
   apt:
     packages:
       - openjdk-8-jre-headless
@@ -25,7 +25,8 @@ cache:
     - $HOME/.npm
 
 php:
- - 7.3
+ - 7.1
+ - 7.4
 
 env:
  global:
