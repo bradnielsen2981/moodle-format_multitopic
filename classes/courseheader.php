@@ -91,6 +91,18 @@ class courseheader implements \renderable {
      * @return string generated HTML.
      */
     public function output(): string {
+		
+		global $CFG;
+		$o = "";
+		
+		//if there is no summary image just output a heading, also check theme isnt a BOOST derivative
+		if (($this->imageurl == null) && ($CFG->theme == "lambda"))
+		{
+			$o .= \html_writer::start_tag('div');
+			$o .= \html_writer::tag('h2', $this->coursename, array('class'=>'section-title'));
+			$o .= \html_writer::end_tag('div');
+        	return $o; 
+		}
 
         // Output the banner.
         // NOTE: Changes here need to be reflected in _course_edit.js .
@@ -104,12 +116,12 @@ class courseheader implements \renderable {
             ]);
         $o .= \html_writer::end_tag('div');
 
-        // Output the attribution.
-        $o .= \html_writer::start_tag('p', ['id'    => 'course-header-banner_attribution',
+        // Output the attribution. SHOULD BE A CONFIG SETTING
+        /*$o .= \html_writer::start_tag('p', ['id'    => 'course-header-banner_attribution',
                                                 'style' => 'visibility: ' . ($this->imageurl ? 'visible' : 'hidden') . ';']);
-        $o .= format_multitopic_image_attribution($this->imagename, $this->authorwithurl, $this->licencecode);
-        $o .= \html_writer::end_tag('p');
-
+		
+        $o .= format_multitopic_image_attribution($this->imagename, $this->authorwithurl, $this->licencecode); 
+        $o .= \html_writer::end_tag('p'); */ //I DONT CARE ABOUT ATTRIBUTION
         return $o;
     }
 

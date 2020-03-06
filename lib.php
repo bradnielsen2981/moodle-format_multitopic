@@ -607,16 +607,40 @@ class format_multitopic extends format_base {
                     'default' => $courseconfig->hiddensections,
                     'type' => PARAM_INT,
                 ),
-                // REMOVED: course display.
-                // ADDED.
-                'bannerslice' => array(
-                    'default' => 0,
+				
+				'bannerslice' => array(
+                    'default' => 50,
                     'type' => PARAM_INT,
                 ),
+				
+				'banneryesno' => array(
+                    'default' => 1,
+                    'type' => PARAM_INT
+                ),
+				
+				'clipboardyesno' => array(
+                    'default' => 0, //default to no, I have sharing cart instead
+                    'type' => PARAM_INT
+                ),
+				
+				
+				'showannouncements' => array(
+                    'default' => 1,
+                    'type' => PARAM_INT
+                ),
+				'numberofannouncements' => array(
+                    'default' => 3,
+                    'type' => PARAM_INT
+                ),
+                // REMOVED: course display.
                 // END ADDED.
             );
         }
         if ($foreditform && !isset($courseformatoptions['hiddensections']['label'])) { // CHANGED.
+			$numberofannouncements = array();
+            for ($i = 0; $i <= 6; $i++) {
+                $numberofannouncements[$i] = "$i";
+            }
             $courseformatoptionsedit = array(
                 // INCLUDED /course/format/periods/lib.php function course_format_options $foreditform 'periodduration' .
                 'periodduration' => array(
@@ -632,6 +656,57 @@ class format_multitopic extends format_base {
                     )),
                     // END ADDED.
                 ),
+				
+				//Activity clipboard yes or no
+				'clipboardyesno' => array(
+                    'label' => new lang_string('clipboardyesno', 'format_multitopic'),
+                    'help' => 'clipboardyesno',
+                    'help_component' => 'format_multitopic',
+                    'element_type' => 'select',
+                    'element_attributes' => array(
+                        array(
+                            1 => new lang_string('yes', 'format_multitopic'),
+                            0 => new lang_string('no', 'format_multitopic')
+                        )
+                    ),
+                ),
+				
+				
+				//banner yes no
+				'banneryesno' => array(
+                    'label' => new lang_string('banneryesno', 'format_multitopic'),
+                    'help' => 'banneryesno',
+                    'help_component' => 'format_multitopic',
+                    'element_type' => 'select',
+                    'element_attributes' => array(
+                        array(
+                            1 => new lang_string('yes', 'format_multitopic'),
+                            0 => new lang_string('no', 'format_multitopic')
+                        )
+                    ),
+                ),
+				//showannouncements yes no
+				'showannouncements' => array(
+                    'label' => new lang_string('showannouncements', 'format_multitopic'),
+                    'help' => 'showannouncements',
+                    'help_component' => 'format_multitopic',
+                    'element_type' => 'select',
+                    'element_attributes' => array(
+                        array(
+                            1 => new lang_string('yes', 'format_multitopic'),
+                            0 => new lang_string('no', 'format_multitopic')
+                        )
+                    ),
+                ),
+				//number of announcements
+				'numberofannouncements' => array(
+                    'label' => new lang_string('numberofannouncements', 'format_multitopic'),
+                    'help' => 'numberofannouncements',
+                    'help_component' => 'format_multitopic',
+                    'element_type' => 'select',
+                    'element_attributes' => array($numberofannouncements), //six
+                ),
+				
                 // END INCLUDED.
                 'hiddensections' => array(
                     'label' => new lang_string('hiddensections'),
@@ -906,7 +981,7 @@ class format_multitopic extends format_base {
      */
     public function inplace_editable_render_section_name($section, $linkifneeded = true,
                                             $editable = null, $edithint = null, $editlabel = null) : \core\output\inplace_editable {
-        $section = $this->fmt_get_section($section);                            // ADDED.
+        $section = $this->fmt_get_section($section);   // ADDED.
         if (empty($edithint)) {
             $edithint = new lang_string('editsectionname');
         }
@@ -924,11 +999,9 @@ class format_multitopic extends format_base {
             $editable = !empty($USER->editing) && has_capability('moodle/course:update',
                     context_course::instance($section->course));
         }
-
-        $displayvalue = $title = html_writer::tag('i', '', ['class' =>
-                                        ($section->levelsan < FORMAT_MULTITOPIC_SECTION_LEVEL_TOPIC ? 'icon fa fa-folder-o fa-fw'
-                                                                                                    : 'icon fa fa-list fa-fw')])
-                                    . ' ' . get_section_name($section->course, $section);
+		
+        $displayvalue = $title = html_writer::tag('i', '', ['class' =>($section->levelsan < FORMAT_MULTITOPIC_SECTION_LEVEL_TOPIC ? 'icon fa fa-folder-o fa-fw':'icon fa fa-list fa-fw')]).' '.get_section_name($section->course, $section);
+		
         // TODO: Fix collapse icon for AJAX rename, somehow?
         if ($linkifneeded) {
             // Display link under the section name, for collapsible sections.
@@ -941,6 +1014,8 @@ class format_multitopic extends format_base {
             // If $linkifneeded==false, we never display the link (this is used when rendering the section header).
             // Itemtype 'sectionnamenl' (nl=no link) will tell the callback that link should not be rendered -
             // there is no other way callback can know where we display the section name.
+			//BRAD
+			//$displayvalue = html_writer::span($title, 'multitopic-section-'.$section->levelsan);
             $itemtype = 'sectionnamenl';
         }
         if (empty($edithint)) {

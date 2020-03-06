@@ -73,12 +73,28 @@ $string['activityclipboard_disable']    = 'Disable activity clipboard';
 $string['activityclipboard_enable']     = 'Enable activity clipboard';
 $string['activityclipboard_placeholder'] = 'Click the up/down arrows next to an activity to move it to the clipboard.';
 
+$string['clipboardyesno']    = 'Enable the Activity Clipboard';
+$string['clipboardyesno_help']   = 'Do you wish to use the Activity Clipboard? This is not necessary if you are using the Sharing Cart Block.';
+
 $string['back_to_course']   = 'Back to course';
+$string['banneryesno'] = 'Display Banner';
+$string['banneryesno_help'] = 'Display Banner';
+
+$string['showannouncements'] = 'Show Announcements';
+$string['showannouncements_help'] = 'Embed the Announcements within first page';
+
+$string['numberofannouncements'] = 'Number of Announcements';
+$string['numberofannouncements_help'] = 'How many Announcements would you like shown on first page';
 
 $string['bannerslice']      = 'Banner slice';
 $string['bannerslice_help'] = 'The slice of the course summary image to use in the course banner.
  e.g.  Set to "0%" to use the top of the course summary image in the course banner, "50%" to use the middle, or "100%" to use the bottom.';
 
+$string['yes'] = 'yes';
+$string['no'] = 'no';
+
+$string['showbanner'] = 'Show Banner';
+$string['hidebanner'] = 'Hide Banner';
 $string['image']            = 'Image';
 $string['image_by']         = 'by';
 $string['image_licence']    = 'licence';

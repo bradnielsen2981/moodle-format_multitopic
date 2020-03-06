@@ -112,7 +112,7 @@ class course_renderer_wrapper {
         $straddactivity = get_string('addactivity');
         $straddresource = get_string('addresource');
         $sectionname = get_section_name($course, $section);
-        $strresourcelabel = get_string('addresourcetosection', null, $sectionname);
+		$strresourcelabel = get_string('addresourcetosection', null, $sectionname);
         $stractivitylabel = get_string('addactivitytosection', null, $sectionname);
 
         $output = \html_writer::start_tag('div',
@@ -150,11 +150,19 @@ class course_renderer_wrapper {
 
         if (course_ajax_enabled($course) && $course->id == $this->innerpage->course->id) { // CHANGED.
             // Modchooser can be added only for the current course set on the page!
-            $straddeither = get_string('addresourceoractivity');
+            $straddeither = "Add resource or activity";
+			$straddlabel = "Add label";
+			$icon = $this->inneroutput->pix_icon('t/add', '');              // CHANGED.
+			
             // The module chooser link.
             $modchooser = \html_writer::start_tag('div', array('class' => 'mdl-right'));
+			//BRAD Adding Label text, feel like this is something that should be easily available.
+			//HTML_WRITER::LINK keeps cutting off array???						  
+			//Hard coding the link below
             $modchooser .= \html_writer::start_tag('div', array('class' => 'section-modchooser'));
-            $icon = $this->inneroutput->pix_icon('t/add', '');              // CHANGED.
+			
+			$modchooser .= "<span class='section-modchooser-label'><a href='/course/modedit.php?add=label&course=".$course->id."&section=".$section->section."'>".$icon.$straddlabel."</a></span>";
+            
             $span = \html_writer::tag('span', $straddeither, array('class' => 'section-modchooser-text'));
             $modchooser .= \html_writer::tag('span', $icon . $span, array('class' => 'section-modchooser-link'));
             $modchooser .= \html_writer::end_tag('div');

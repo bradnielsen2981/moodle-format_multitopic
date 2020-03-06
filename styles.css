@@ -2,6 +2,30 @@ body.format-multitopic ul.sections {
     list-style: none;
 }
 
+.format-multitopic #course-header-banner {
+	height: 120px;
+	margin-bottom:20px;
+	background-size:cover;
+}
+
+.format-multitopic #course-header-banner-text 
+{
+    color: white;
+    text-shadow: 2px 2px 4px #000000;
+    font-size: 38px;
+    padding: 4.5% 10%;
+	line-height:1.2em;
+	font-family:'Roboto';
+}
+
+body.format-multitopic ul li.section.main div.content h3.sectionname.level-1, body.format-multitopic ul li.section.main div.content h3.sectionname.level-0,body.format-multitopic ul li.section.main div.content h3.sectionname.level--1
+{
+	color:#0d2378 !important;
+	background:none;
+	border:0px;
+	font-size:1.88rem !important;
+	margin-bottom:10px!important;
+}
 
 /* ADDED */
 
@@ -27,4 +51,99 @@ body.format-multitopic.path-mod.pagelayout-incourse #page #page-content .activit
     display: none;
 }
 
+.section-modchooser-label { padding-left:5px; padding-right:10px; }
+
 /* END ADDED */
+
+body.format-multitopic h2.section-title {
+	font-size:2.15em;
+}
+
+body.format-multitopic #section-0 .content>h3.sectionname::after
+{
+}
+
+body.format-multitopic .course-content
+{
+	margin-top: 10px;
+}
+
+body.format-multitopic #section-0 .content>h3.sectionname
+{
+	margin-bottom:5px !important;
+	background:none;
+	border:none;
+}
+
+body.format-multitopic h3.sectionname.level-2:hover
+{
+	background:#efefef;
+}
+
+body.format-multitopic h3.sectionname.level-1::after, body.format-multitopic h3.sectionname.level-0::after  {
+ background: #f9bf3b none repeat scroll 0 0;
+    content: "";
+    display: block;
+    height: 3px;
+	margin-left: -4px;
+    margin-top: 14px;
+	margin-bottom: 14px;
+    max-width: 75px;
+    padding: 0;
+    width: 50%;
+}
+
+body.format-multitopic h3.sectionname.level-0
+{
+	padding-top:5px;
+	padding-bottom:0px;
+}
+
+body.format-multitopic h2.section-title::after {
+    background: #f9bf3b none repeat scroll 0 0 !important;
+    content: "";
+    display: block;
+    height: 3px;
+	margin-left: -4px;
+    margin-top: 15px;
+	margin-bottom: 15px;
+    max-width: 75px;
+    padding: 0;
+    width: 50%;
+}
+
+body.format-multitopic #section-0 .content>h3.sectionname:after
+{
+	background: #f9bf3b none repeat scroll 0 0;
+    content: "";
+    display: block;
+    height: 3px;
+    margin-left: -4px;
+    margin-top: 14px;
+    margin-bottom: 0px;
+    max-width: 75px;
+    padding: 0;
+    width: 50%;
+}
+
+body.format-multitopic .singlebutton.forumaddnew
+{
+	margin-top:20px;
+}
+
+
+.format-multitopic ul.nav.nav-tabs
+{
+    border-bottom: 1px solid #d9d9d9;
+    /*background: linear-gradient(#fff, #fff, #fff, #fff, #fff, #f8f8f8);*/
+}
+/*
+.format-multitopic .nav-tabs>li>a, .nav-pills>li>a
+{
+	margin-right: 0;
+    border: thin solid #ddd;
+}
+*/
+
+
+

@@ -103,6 +103,7 @@ class format_multitopic_renderer extends format_section_renderer_base {         
      * @param stdClass $course The course entry from DB
      * @param bool $linkifneeded Whether to add link
      * @return string HTML to output.
+	 * BRAD NIELSEN EDIT SO THAT SECTION TITLE HAS THE LEVEL SAN IN CLASS FOR FORMATTING
      */
     public function section_title($section, $course, bool $linkifneeded = true) : string {
         // CHANGED LINE ABOVE.
@@ -178,7 +179,7 @@ class format_multitopic_renderer extends format_section_renderer_base {         
                 $sectionstyle .= ' section-userhidden';
             }
             // END ADDED.
-        }
+        } 
 
         // ADDED.
         // Determine the section type.
@@ -209,13 +210,14 @@ class format_multitopic_renderer extends format_section_renderer_base {         
 
         // REMOVED: section title display rules.  Always display the section title.
         if (true) {
-            $classes = '';
+            $classes = ' level-'.$section->levelsan;
         }
 
         $sectionname = html_writer::tag('span', $this->section_title($section, $course, $section->levelsan >= FORMAT_MULTITOPIC_SECTION_LEVEL_TOPIC && $section->uservisible)); // CHANGED.
-        $o .= $this->output->heading($sectionname, 3, 'sectionname' . $classes);
+        $o .= $this->output->heading($sectionname, 3, 'sectionname'.$classes);
 
         $o .= $this->section_availability($section);
+		
 
         $o .= html_writer::start_tag('div', array('class' => 'summary'));
         if ($section->uservisible || $section->visible) {
@@ -224,6 +226,7 @@ class format_multitopic_renderer extends format_section_renderer_base {         
             // "Hidden sections are shown in collapsed form".
             $o .= $this->format_summary_text($section);
         }
+		
         $o .= html_writer::end_tag('div');
 
         return $o;
@@ -531,13 +534,15 @@ class format_multitopic_renderer extends format_section_renderer_base {         
                 $buttontext = get_string_manager()->string_exists('activityclipboard_enable', 'format_multitopic') ?
                                 get_string('activityclipboard_enable', 'format_multitopic') : get_string('enable');
             }
+			
 
             // ADDED.
             $button = new single_button($url, $buttontext, 'get');
             $button->disabled = $disableajax && ismoving($course->id);
             $o .= html_writer::tag('div', $this->render($button),
                                     ['class' => 'buttons visibleifjs', 'style' => 'float: right;']); // TODO: Use CSS?
-            // END ADDED.
+            
+			// END ADDED.
         }
         // END INCLUDED.
 
@@ -599,14 +604,15 @@ class format_multitopic_renderer extends format_section_renderer_base {         
      */
     public function print_multiple_section_page($course, $sections, $mods, $modnames, $modnamesused, $displaysection = 0) {
         // CHANGED ABOVE included displaysection from print_single_section_page
-        global $PAGE, $OUTPUT;                                                  // CHANGED: Included output global.
+        global $PAGE, $OUTPUT, $CFG;                                                  // CHANGED: Included output global.
 
         // REMOVED: Replaced modinfo with fmt_get_sections .
         $course = course_get_format($course)->get_course();
 
         // ADDED.
         $sections = course_get_format($course)->fmt_get_sections();
-
+		
+		
         // Find display section.
         if (is_object($displaysection && isset($displaysection->id))) {
             $displaysection = $sections[$displaysection->id] ?? null;
@@ -643,10 +649,13 @@ class format_multitopic_renderer extends format_section_renderer_base {         
 
         // Title with completion help icon.
         // REMOVED: Move completioninfo as per print_single_section_page.
-        echo $this->output->heading($this->page_title(), 2, 'accesshide');
 
         // Copy activity clipboard..
-        echo $this->fmt_course_activity_clipboard($course, $displaysection);    // CHANGED from print_single_section_page.
+		//BRAD Added a config setting to disable the activity clipboard, not necessary if using sharing cart
+		if ($course->clipboardyesno)
+		{
+			echo $this->fmt_course_activity_clipboard($course, $displaysection); 
+		}
 
         // INCLUDED list of sections parts
         // and /course/format/onetopic/renderer.php function print_single_section_page tabs parts CHANGED.
@@ -681,17 +690,32 @@ class format_multitopic_renderer extends format_section_renderer_base {         
                 $sectionname = get_section_name($course, $thissection);
 
                 $url = course_get_url($course, $thissection);
-
+				
+				//if there was a picture for the section, i could store the link in the tab
+				
                 // REMOVED: marker.
-
+				//NEED TO CHANGE SO THAT INSTEAD OF BOTH LEVELS JUST DO THE BOTTOM LEVEL
                 // Include main tab, and index tabs for pages with sub-pages.
-                for ($level = max(FORMAT_MULTITOPIC_SECTION_LEVEL_ROOT + 1, $thissection->levelsan);
+            	for ($level = max(FORMAT_MULTITOPIC_SECTION_LEVEL_ROOT + 1, $thissection->levelsan);
                      $level <= $thissection->pagedepthdirect
                                 + ($PAGE->user_is_editing()
                                     && $thissection->pagedepthdirect < FORMAT_MULTITOPIC_SECTION_LEVEL_PAGE_USE ? 1 : 0);
                      $level++) {
 
-                    // Make tab.
+					
+					//BRAD MAKE AN OPTION WHERE THE USER CAN CHOOSE EITHER A GRID OR A TABS - the tab structure itself is fine, its the renderer that could be changes, the only problem with this approach is the creation of a link to an image that is stored in the Course Site.
+					//IF ITS LEVEL ROOT, MAKE AN IMAGE BOX AS OPPOSED TO A TAB
+					//LINK IN A COURSE NAVIGATION PHP FILE THAT CONTAINS A RENDERER
+					
+					//BRAD could make image sections if possible OR MAKE A NEW OUTPUT COMPONENT INSTEAD OF TABS,
+					//if level 0, create an image link
+					/*if ($level == 0)
+					{
+						echo "Level: ".$level." Link: ";
+						echo html_writer::link($url, $sectionname)." / ";
+					} //else create a tab */
+					
+                    // Make tab. 
                     $newtab = new tabobject("tab_id_{$thissection->id}_l{$level}", $url,
                         html_writer::tag('div', $sectionname, ['class' =>
                             'tab_content'
@@ -728,14 +752,11 @@ class format_multitopic_renderer extends format_section_renderer_base {         
                 && $PAGE->user_is_editing() && has_capability('moodle/course:update', $context)) {
 
                 // Include "add" sub-tabs for each level of page finished.
-                $nextsectionlevel = $thissection->nextpageid ? $sections[$thissection->nextpageid]->levelsan
-                                                            : FORMAT_MULTITOPIC_SECTION_LEVEL_ROOT;
-                for ($level = min($sectionatlevel[FORMAT_MULTITOPIC_SECTION_LEVEL_TOPIC - 1]->pagedepthdirect + 1,
-                                    FORMAT_MULTITOPIC_SECTION_LEVEL_PAGE_USE);
-                        $level >= $nextsectionlevel + 1;
-                        $level--) {
+                $nextsectionlevel = $thissection->nextpageid ? $sections[$thissection->nextpageid]->levelsan : FORMAT_MULTITOPIC_SECTION_LEVEL_ROOT;
+                for ($level = min($sectionatlevel[FORMAT_MULTITOPIC_SECTION_LEVEL_TOPIC - 1]->pagedepthdirect + 1, FORMAT_MULTITOPIC_SECTION_LEVEL_PAGE_USE);
+                    $level >= $nextsectionlevel + 1; $level--) {
 
-                    // Make "add" tab.
+                    // Make "add" tab. BRAD TO CREATE A SUBTRACT TAB AS WELL??
                     $straddsection = get_string_manager()->string_exists('addsectionpage', 'format_' . $course->format) ?
                                         get_string('addsectionpage', 'format_' . $course->format) : get_string('addsections');
                     $url = new moodle_url('/course/format/multitopic/_course_changenumsections.php',
@@ -751,7 +772,7 @@ class format_multitopic_renderer extends format_section_renderer_base {         
                         $icon,
                         s($straddsection));
 
-                    // Add "add" tab.
+                    // Add "add" tab. BRAD ADD A SUBTRACT TAB AS WELL
                     if ($level <= FORMAT_MULTITOPIC_SECTION_LEVEL_ROOT + 1) {
                         $tabs[] = $newtab;
                     } else {
@@ -759,20 +780,38 @@ class format_multitopic_renderer extends format_section_renderer_base {         
                     }
                     $tabln[$level] = null;
 
+					
                 }
 
             }
 
         }
+		
+		
+		//BRAD
+		//COURSE HEADER IS ONLY NEEDED IN THEMES THAT ARE NOT BOOST BASED.
+		//FOR THE MOMENT, CHECK THE THEME AND HAVE A CONFIG SETTING TO SHOW A BANNER
+		if ($CFG->theme == 'lambda' && $course->banneryesno) { 
+			$courseheader = course_get_format($course)->course_header();
+			echo $courseheader->output();
+		} else {
+			$classes = 'section-title';
+			//echo html_writer::tag('h2', $course->fullname);
+			$sectiontitle = $this->output->heading($course->fullname, 2, $classes);
+			echo $sectiontitle;
+			//echo '<h3 class="sectionname">'.$course->fullname.'</h3>';
+		}
 
         // Display tabs.
         echo html_writer::start_tag('div', ['style' => 'clear: both']); // TODO: Use CSS?
-        echo $OUTPUT->tabtree($tabs,
+        
+		//BRAD HERE IS THE OUTPUT FOR THE TAB TREE INSTEAD SEND TO MY OWN CUSTOM FUNCTION
+		//Outputs the TAB TREE, SO NEED TO MAKE SURE ONLY SECOND LEVEL TABS ARE ADDED
+		//EACH TAB OF THE HIGHER LEVEL COULD LOOK FOR AN IMAGE
+		echo $OUTPUT->tabtree($tabs,
             "tab_id_{$displaysection->id}_l{$displaysection->pagedepthdirect}",
             $inactivetabs);
         echo html_writer::end_tag('div');
-
-        // END INCLUDED.
 
         // Now the list of sections..
         echo $this->start_section_list();
@@ -809,20 +848,29 @@ class format_multitopic_renderer extends format_section_renderer_base {         
 
             if ($thissection->levelsan <= FORMAT_MULTITOPIC_SECTION_LEVEL_ROOT
                 || $sectionatlevel[$level - 1]->uservisiblesan && $showsection) {   // ADDED.
-                $pageid = ($thissection->levelsan < FORMAT_MULTITOPIC_SECTION_LEVEL_TOPIC) ? $thissection->id
-                                                                                           : $thissection->parentid;
+                $pageid = ($thissection->levelsan < FORMAT_MULTITOPIC_SECTION_LEVEL_TOPIC) ? $thissection->id: $thissection->parentid;
                 echo $this->section_header($thissection, $course, $thissection->levelsan < FORMAT_MULTITOPIC_SECTION_LEVEL_TOPIC);
+				
                 if ($thissection->uservisible && $pageid == $displaysection->id) {
                     // CHANGED LINE ABOVE.
                     // ADDED moved here as per print_single_section_page.
                     if ($thissection->levelsan < FORMAT_MULTITOPIC_SECTION_LEVEL_TOPIC) {
                         $completioninfo = new completion_info($course);
-                        echo $completioninfo->display_help_icon();
+                        //echo $completioninfo->display_help_icon(); //BRAD OPTION
                     }
-                    // END ADDED.
+					
+					//BRAD OUTPUT ANNOUNCEMENTS
+					if ($thissection->section == 0 && $course->showannouncements) {
+						echo $this->print_noticeboard($course);
+					}
+                    // END ADDED.					
+					
                     echo $this->courserenderer->course_section_cm_list($course, $thissection); // CHANGED removed section return.
+				
+					//BRAD HERE 
                     echo (new \format_multitopic\course_renderer_wrapper($this->courserenderer)
-                         )->course_section_add_cm_control($course, $thissection); // CHANGED removed section return.
+                         )->course_section_add_cm_control($course, $thissection);
+					
                 }
                 echo $this->section_footer();
             }
@@ -988,5 +1036,27 @@ class format_multitopic_renderer extends format_section_renderer_base {         
         return $headerfooter->output();
     }
     // END ADDED.
+	
+	    /**
+     * Outputs the latest news item. CODE TAKE FROM NOTICEBD
+     * @global stdClass $OUTPUT Output renderer instance.
+     * @param stdClass $course The course to use.
+     */
+	//BRAD NOTICEBOARD HERE - can make the number of announcements a config option
+    protected function print_noticeboard($course) {
+        global $OUTPUT;
+        if ($forum = forum_get_course_forum($course->id, 'news')) {
+            $cm = get_coursemodule_from_instance('forum', $forum->id);
+            $context = context_module::instance($cm->id);
+			//BRAD subscribe link option
+            //echo $this->output->heading('Announcements', 4, 'sectionname');
+            //echo '<div class="subscribelink">', forum_get_subscribe_link($forum, $context), '</div>'; 
+            echo forum_print_latest_discussions($course, $forum, $course->numberofannouncements, 'plain', '', -1, -1, -1, 100, $cm);
+
+        } else {
+            echo $OUTPUT->notification('Could not find or create a news forum here');
+        }
+    }
+
 
 }
