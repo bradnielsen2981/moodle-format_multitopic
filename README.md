@@ -1,11 +1,12 @@
 # Moodle Multitopic Format ⭐
 
-Note by Brad Nielsen who has forked this repository and edited the it significantly.
+Note by Brad Nielsen who has forked this repository and edited it significantly. My edits are prefaced by the name BRAD.
 
-This is by far the best format on Moodle for using sections within sections. I cant wait to try it on the College in which I work. I have made a few edits though - mainly to go with the Lambda theme that my College is using. So the Course Format CSS has changed significantly which might make it ugly for others. I have then added some things which I have always wanted with a theme as well.
+This is by far the best format on Moodle for using sections within sections and the work of James Calder in developing this format should be admired. I cant wait to try it on the College in which I work. I have made a few edits though - mainly to go with the Lambda theme that my College is using. So the Course Format CSS has changed significantly which might make it ugly for others. I have then added some things which I have always wanted with a theme as well.
 
 1. Labels can be added more easily
 2. The Announcements Forum now appears on Page 1 as opposed to being hidden in a link.
+3. More config options..
 
 
 > Shows multiple topics per page, with tabbed navigation between pages.  Topics are collapsible, and can optionally be timed.
