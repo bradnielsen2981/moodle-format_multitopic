@@ -1,7 +1,7 @@
 <?php
 // This file is part of Moodle - http://moodle.org/
 //
-// Moodle is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistrib<strong></strong>ute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -92,16 +92,19 @@ class courseheader implements \renderable {
      */
     public function output(): string {
 		
-		global $CFG;
+		global $CFG, $PAGE;
 		$o = "";
 		
-		//if there is no summary image just output a heading, also check theme isnt a BOOST derivative
-		if (($this->imageurl == null) && ($CFG->theme == "lambda"))
+		//if there is no summary image just output a heading, also check theme isnt a BOOST derivative, as BOOST will already output the heading
+		if (in_array('bootstrapbase', $PAGE->theme->parents))
 		{
-			$o .= \html_writer::start_tag('div');
-			$o .= \html_writer::tag('h2', $this->coursename, array('class'=>'section-title'));
-			$o .= \html_writer::end_tag('div');
-        	return $o; 
+			if ($this->imageurl == null)
+			{
+				$o .= \html_writer::start_tag('div');
+				$o .= \html_writer::tag('h2', $this->coursename, array('class'=>'section-title'));
+				$o .= \html_writer::end_tag('div');
+				return $o; 
+			}
 		}
 
         // Output the banner.

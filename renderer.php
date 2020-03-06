@@ -791,15 +791,19 @@ class format_multitopic_renderer extends format_section_renderer_base {         
 		//BRAD
 		//COURSE HEADER IS ONLY NEEDED IN THEMES THAT ARE NOT BOOST BASED.
 		//FOR THE MOMENT, CHECK THE THEME AND HAVE A CONFIG SETTING TO SHOW A BANNER
-		if ($CFG->theme == 'lambda' && $course->banneryesno) { 
-			$courseheader = course_get_format($course)->course_header();
-			echo $courseheader->output();
-		} else {
-			$classes = 'section-title';
-			//echo html_writer::tag('h2', $course->fullname);
-			$sectiontitle = $this->output->heading($course->fullname, 2, $classes);
-			echo $sectiontitle;
-			//echo '<h3 class="sectionname">'.$course->fullname.'</h3>';
+		//if ($CFG->theme == 'lambda') //I could just check for the lambda theme
+		if (in_array('bootstrapbase',$PAGE->theme->parents))
+		{
+			if ($course->banneryesno)
+			{
+				$courseheader = course_get_format($course)->course_header();
+				echo $courseheader->output();
+			} else{
+				$classes = 'section-title';
+				//echo html_writer::tag('h2', $course->fullname);
+				$sectiontitle = $this->output->heading($course->fullname, 2, $classes);
+				echo $sectiontitle;
+			}
 		}
 
         // Display tabs.
